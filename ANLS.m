@@ -1,8 +1,8 @@
 function [L,R,it,conv] = ANLS(M,L0,R0,maxiter,tol)
 
 if nargin < 4, maxiter = 100; end
-if nargin < 5, tol = 1e-3; end
- 
+if nargin < 5, tol = 1e-3; end 
+
 L = L0; R = R0;
 Mt = M';
 
