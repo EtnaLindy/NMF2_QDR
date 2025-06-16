@@ -13,7 +13,7 @@ recompute_results = false;  % use precomputed values or compute from scratch
 matrix_dims = [10;20;30;40;50;60;70;80;90;100];
 
 N = 1000;           % number of test cases
-maxiter = 100;      % max ANLS iterations
+maxiter = 1000;      % max ANLS iterations
 tol_pow = -3;    
 tol = 10^tol_pow;   % convergence criterion
 
@@ -155,7 +155,7 @@ colororder(my_colors);
 
 legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','northeast');
 xlabel("n");
-xlim([min(matrix_dims) max(matrix_dims)]); ylim([0.9999,1.002]);
+xlim([min(matrix_dims) max(matrix_dims)]); ylim([0.9999,1.01]);
 fontsize(18,"points");
 title("Worst ratio between distances");
 

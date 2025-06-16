@@ -13,7 +13,7 @@ recompute_results = false;  % use precomputed values or compute from scratch
 matrix_dims = [ [10000;11000;12000;13000;14000;15000] 150*ones(6,1) ];
 
 N = 1000;           % number of test cases
-maxiter = 100;      % max ANLS iterations
+maxiter = 1000;      % max ANLS iterations
 tol_pow = -3;    
 tol = 10^tol_pow;   % convergence criterion
 
@@ -141,7 +141,7 @@ legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','northwest');
 
 ylabel("time (s)");
 xlim([min(matrix_dims) max(matrix_dims)]); ylim([-0.01, 0.23]);
-fontsize(18,"points");
+fontsize(20,"points");
 title("Median time performance for nxn matrices");
 
 
@@ -158,7 +158,7 @@ colororder(my_colors);
 xlabel("n"); ylabel("time (s)");
 xlim([min(matrix_dims) max(matrix_dims)]);
 ylim([0 0.03]);
-fontsize(18,"points");
+fontsize(20,"points");
 title("Zoom in");
 
 
@@ -190,7 +190,7 @@ colororder(my_colors);
 
 xlabel("n");
 xlim([min(matrix_dims) max(matrix_dims)]); ylim([0 3])
-fontsize(18,"points");
+fontsize(20,"points");
 title("Worst-case relative errors of initializations");
 
 subplot(2,1,2); hold on;
@@ -206,7 +206,7 @@ legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','eastoutside');
 xlabel("n");
 xlim([min(matrix_dims) max(matrix_dims)]);
 ylim([1,1.005]);
-fontsize(18,"points");
+fontsize(20,"points");
 title("Zoom in");
 
 exportgraphics(f,"RESULTS/" + str_exp + "_acc_init.png");
@@ -232,7 +232,7 @@ linestyleorder(my_syms);
 colororder(my_colors);
 xlabel("n");
 xlim([min(matrix_dims) max(matrix_dims)]); ylim([0.99,1.7])
-fontsize(18,"points");
+fontsize(20,"points");
 title("Worst-case relative errors");
 
 
@@ -247,7 +247,7 @@ legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','eastoutside');
 
 xlabel("n");
 xlim([min(matrix_dims) max(matrix_dims)]); ylim([0.99 1.05]);
-fontsize(18,"points");
+fontsize(20,"points");
 title("Worst-case relative errors");
 
 
@@ -281,7 +281,7 @@ legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','east');
 
 xlabel("n"); ylabel("%");
 xlim([min(matrix_dims) max(matrix_dims)]);
-fontsize(18,"points");
+fontsize(20,"points");
 title("Frequency of being the fastest algorithm");
 
 exportgraphics(f,"RESULTS/" + str_exp + "_fastest.png");
@@ -296,7 +296,7 @@ f = figure(5); clf;
 f.Position = [10, 10, 900, 900];
 subplot(3,1,1); hold on; xlim([min(matrix_dims) max(matrix_dims)]); title("Median number of iterations");
 subplot(3,1,2); hold on; xlim([min(matrix_dims) max(matrix_dims)]); ylim([0 10]); title("Zoom in");
-subplot(3,1,3); hold on; xlim([min(matrix_dims) max(matrix_dims)]); ylim([-1 30]); title("% of cases with >" + string(maxiter) + " iters");
+subplot(3,1,3); hold on; xlim([min(matrix_dims) max(matrix_dims)]); title("% of cases with >1 iters");
 
 
 for i = 1:5
@@ -307,7 +307,7 @@ for i = 1:5
     plot(matrix_dims,median(ALL_RESULTS(i,:,:,3),3),'LineWidth',3);
 
     subplot(3,1,3); % not converge
-    plot(matrix_dims,sum(ALL_RESULTS(i,:,:,3)==maxiter+1,3)./(N/100),'LineWidth',3);
+    plot(matrix_dims,sum(ALL_RESULTS(i,:,:,3)>1,3)./(N/100),'LineWidth',3);
 end
 linestyleorder(my_syms);
 colororder(my_colors);
@@ -316,6 +316,6 @@ subplot(3,1,2);
 legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','eastoutside');
 
 
-fontsize(18,"points");
+fontsize(20,"points");
 exportgraphics(f,"RESULTS/" + str_exp + "_iters.png");
 savefig("RESULTS/" + str_exp + "_iters");

@@ -3,12 +3,20 @@ addpath 'NNSVD-LRC_v2'
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% testcase B: tall log normal iid matrices
+% testcase C: 4x4 integer matrices with known optima
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rng(51193);                 % some birthday
 recompute_results = false;  % use precomputed values or compute from scratch
 
+load datamatrices.mat;
+
+N = size(originalmatrices,1);
+
+m = 4; n = 4;
+maxiter = 1000;
+tol_pow = -5;
+tol = 10^tol_pow;
 
 
 if recompute_results
@@ -19,18 +27,6 @@ if recompute_results
 %               ANLS iters, ANLS convergence, 
 %               init time, ANLS time,
 %               init relative error to U, relative error to U
-
-
-load datamatrices.mat;
-
-m = 4; n = 4;
-N = size(originalmatrices,1);
-
-maxiter = 1000;
-tol_pow = -5;
-tol = 10^tol_pow;
-    
-
 
 ALL_RESULTS = zeros(5,N,8);
 
@@ -152,7 +148,7 @@ xlabel("index");
 
 
 sgtitle("Worst-case scaled distance between N^* and init");
-fontsize(18,"points");
+fontsize(20,"points");
 exportgraphics(f,"RESULTS/" + str_exp + "_accinit.png");
 savefig("RESULTS/" + str_exp + "_accinit");
 
@@ -182,23 +178,28 @@ legend('SPA','NNSVDLRC','NNDSVD','QDR','Location','eastoutside');
 xlabel("index");
 
 sgtitle("Worst-case scaled distance to N^*");
-fontsize(18,"points");
+fontsize(20,"points");
 exportgraphics(f,"RESULTS/" + str_exp + "_acc.png");
 savefig("RESULTS/" + str_exp + "_acc");
+
 
 
 titles = ["SPA","NNSVDLRC","NNDSVD","rand","QDR"];
 bound_str = ["> 0.1", "[0.1,1e-5[", "<= 1e-5"];
 bounds = [inf, 1e-1, 1e-5, -inf];
+
+data = zeros(5,3);
+
 for j = 1:5
 fprintf("%s:\n",titles(j));
     for i = 1:3
-        kk = sum((ALL_RESULTS(j,:,2) > bounds(i+1)) .* (ALL_RESULTS(j,:,2) <= bounds(i))); 
-        fprintf("%s : \t%d kpl\n", bound_str(i), kk); 
+        data(j,i) = sum((ALL_RESULTS(j,:,2) > bounds(i+1)) .* (ALL_RESULTS(j,:,2) <= bounds(i))); 
+        fprintf("%s : \t%d kpl\n", bound_str(i), data(j,i)); 
     end
     fprintf("\n");
 end
-    
+
+
 
 
 fprintf("Number of cases where certain method gives the closest initial point:\n");
