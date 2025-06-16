@@ -1,3 +1,6 @@
+%% Nonnegative least squares
+% Given M,W compute nonnegative H that minimizes || M - WH' ||_2
+
 function H = NNLS(M,W)
     left = W'*W; right = M'*W;
     H = anls_entry_rank2_precompute_opt(left, right)';

@@ -1,5 +1,12 @@
+%% SVD-based initialization for NMF2
+% output L+ >= 0(mx2) and R+ >= 0(nx2) such that 
+% L+*R+' = L*R', where L, R minimize
+% ||Uhat - L||^2_2 + ||Vhat - R||_2^2
+% where Uhat*Vhat' is the best rank-2 approximation for input N
+
+% Assumes that N is nonnegative to begin with.
+
 function [L,R] = qdrinit(N)
-%QDRINIT Summary of this function goes hereDu
 
 [U,S,V] = fastsvd2(N);
 
@@ -14,10 +21,10 @@ psi=atan2(U(:,2),U(:,1)); du = sqrt(sum(U.^2,2));
 phi=atan2(V(:,2),V(:,1)); dv = sqrt(sum(V.^2,2));
 
 % Solve the problem by finding the zeros of the derivative piecewise
-
 [alpha1,~] = mintheta(psi,phi,du,dv);
 [alpha2,~] = mintheta(phi,psi,dv,du);
 
+% find nonnegative L and R
 s=sqrt(cos(alpha2-alpha1)); 
 L=du.*[cos(alpha1-psi),sin(alpha2-psi)]/s;
 R=dv.*[cos(alpha2-phi),sin(alpha1-phi)]/s;
