@@ -13,5 +13,5 @@ The raw data is in RESULTS folder, and the files benchmarking_i.m for i in {a,b,
 figures for the various test cases.
 
 To rerun the benchmarking computations, one needs the codes for SPA, NNSVDLRC, and NNDSVD. All of these can 
-be found in https://sites.google.com/site/nicolasgillis/code?authuser=1.
+be found in https://sites.google.com/site/nicolasgillis/code.
 
