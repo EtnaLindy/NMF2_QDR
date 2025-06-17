@@ -204,10 +204,40 @@ end
 
 fprintf("Number of cases where certain method gives the closest initial point:\n");
 
-[~,I] = min(ALL_RESULTS(:,:,1),[],1);
+[~,I1] = min(ALL_RESULTS(:,:,1),[],1);
+[~,I2] = min(ALL_RESULTS(:,:,2),[],1);
 
-fprintf("SPA:\t\t%d\n", sum(I==1));
-fprintf("NNSVDLRC:\t%d\n", sum(I==2));
-fprintf("NNDSVD:\t\t%d\n", sum(I==3));
-fprintf("rand:\t\t%d\n", sum(I==4));
-fprintf("QDR:\t\t%d\n", sum(I==5));
+fprintf("SPA:\t\t%d\n", sum(I1==1));
+fprintf("NNSVDLRC:\t%d\n", sum(I1==2));
+fprintf("NNDSVD:\t\t%d\n", sum(I1==3));
+fprintf("rand:\t\t%d\n", sum(I1==4));
+fprintf("QDR:\t\t%d\n", sum(I1==5));
+
+
+fprintf("Number of cases where certain method gives the closest point to the optimum:\n");
+
+fprintf("SPA:\t\t%d\n", sum(I2==1));
+fprintf("NNSVDLRC:\t%d\n", sum(I2==2));
+fprintf("NNDSVD:\t\t%d\n", sum(I2==3));
+fprintf("rand:\t\t%d\n", sum(I2==4));
+fprintf("QDR:\t\t%d\n", sum(I2==5));
+
+fprintf("\nLargest distance comparing to the optimum distance\n\n");
+
+scaled_dist = zeros(5,N);
+dopt = zeros(N,1);
+
+for i = 1:N
+    U = reshape(originalmatrices(i,:),m,n);
+    Uopt = reshape(solutions(i,:),m,n);
+    dopt(i) = norm(U-Uopt,'fro')/norm(U,'fro');
+    
+    for k = 1:5
+        scaled_dist(k,i) = ALL_RESULTS(k,i,8)/dopt(i);
+    end
+    
+end
+
+MMax = max(scaled_dist,[],2);
+
+fprintf("%s\n",join(string(MMax),", "));

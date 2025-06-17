@@ -13,7 +13,7 @@ recompute_results = false;  % use precomputed values or compute from scratch
 matrix_dims = [100;200;300;400;500;600;700;800;900;1000;1100;1200];
 
 N = 1000;           % number of test cases
-maxiter = 100;      % max ANLS iterations
+maxiter = 1000;      % max ANLS iterations
 tol_pow = -3;    
 tol = 10^tol_pow;   % convergence criterion
 
@@ -27,7 +27,7 @@ if recompute_results
 
 
 ALL_RESULTS = zeros(5,size(matrix_dims,1),N,6);
-
+norms_U = zeros(N,1);
 
 for k = 1:size(matrix_dims,1)
     
@@ -42,6 +42,7 @@ for k = 1:size(matrix_dims,1)
         if mod(i,N/4) == 0, fprintf("%d %%... ", compl); compl =  compl + 25; end
 
         U = generate_data(n,n,true);
+        norms_U(i) = norm(U,'fro');
  
         
         tic; % QDR
@@ -50,8 +51,8 @@ for k = 1:size(matrix_dims,1)
         tic; 
         [L,R,ALL_RESULTS(5,k,i,3),ALL_RESULTS(5,k,i,4)] = ANLS(U,L0,R0,maxiter,tol);
         ALL_RESULTS(5,k,i,6) = toc;
-        ALL_RESULTS(5,k,i,1) = norm(L0*R0'-U,'fro')/norm(U,'fro');
-        ALL_RESULTS(5,k,i,2) = norm(L*R'-U,'fro')/norm(U,'fro');
+        ALL_RESULTS(5,k,i,1) = norm(L0*R0'-U,'fro');
+        ALL_RESULTS(5,k,i,2) = norm(L*R'-U,'fro');
 
 
         tic; % SPA
@@ -60,8 +61,8 @@ for k = 1:size(matrix_dims,1)
         tic; 
         [L,R,ALL_RESULTS(1,k,i,3),ALL_RESULTS(1,k,i,4)] = ANLS(U,L0,R0',maxiter,tol);
         ALL_RESULTS(1,k,i,6) = toc;
-        ALL_RESULTS(1,k,i,1) = norm(L0*R0-U,'fro')/norm(U,'fro');
-        ALL_RESULTS(1,k,i,2) = norm(L*R'-U,'fro')/norm(U,'fro');
+        ALL_RESULTS(1,k,i,1) = norm(L0*R0-U,'fro');
+        ALL_RESULTS(1,k,i,2) = norm(L*R'-U,'fro');
 
 
         tic; % NNSVDLRC
@@ -70,8 +71,8 @@ for k = 1:size(matrix_dims,1)
         tic; 
         [L,R,ALL_RESULTS(2,k,i,3),ALL_RESULTS(2,k,i,4)] = ANLS(U,L0,R0',maxiter,tol);
         ALL_RESULTS(2,k,i,6) = toc;
-        ALL_RESULTS(2,k,i,1) = norm(L0*R0-U,'fro')/norm(U,'fro');
-        ALL_RESULTS(2,k,i,2) = norm(L*R'-U,'fro')/norm(U,'fro');
+        ALL_RESULTS(2,k,i,1) = norm(L0*R0-U,'fro');
+        ALL_RESULTS(2,k,i,2) = norm(L*R'-U,'fro');
 
 
         tic; % NNDSVD
@@ -80,8 +81,8 @@ for k = 1:size(matrix_dims,1)
         tic; 
         [L,R,ALL_RESULTS(3,k,i,3),ALL_RESULTS(3,k,i,4)] = ANLS(U,L0,R0',maxiter,tol);
         ALL_RESULTS(3,k,i,6) = toc;
-        ALL_RESULTS(3,k,i,1) = norm(L0*R0-U,'fro')/norm(U,'fro');
-        ALL_RESULTS(3,k,i,2) = norm(L*R'-U,'fro')/norm(U,'fro');
+        ALL_RESULTS(3,k,i,1) = norm(L0*R0-U,'fro');
+        ALL_RESULTS(3,k,i,2) = norm(L*R'-U,'fro');
 
 
         tic; % random initialization
@@ -90,8 +91,8 @@ for k = 1:size(matrix_dims,1)
         tic; 
         [L,R,ALL_RESULTS(4,k,i,3),ALL_RESULTS(4,k,i,4)] = ANLS(U,L0,R0,maxiter,tol);
         ALL_RESULTS(4,k,i,6) = toc;
-        ALL_RESULTS(4,k,i,1) = norm(L0*R0'-U,'fro')/norm(U,'fro');
-        ALL_RESULTS(4,k,i,2) = norm(L*R'-U,'fro')/norm(U,'fro');
+        ALL_RESULTS(4,k,i,1) = norm(L0*R0'-U,'fro');
+        ALL_RESULTS(4,k,i,2) = norm(L*R'-U,'fro');
 
 
     end
@@ -104,12 +105,14 @@ end
 str_exp = sprintf("nxn_tol_1e%d_iters%d_case_a",tol_pow,maxiter);
 
 writematrix(ALL_RESULTS,"RESULTS/" + str_exp + ".txt");
+writematrix(norms_U,"RESULTS/"+str_exp+ "_norms.txt");
 
 else 
 
 str_exp = sprintf("nxn_tol_1e%d_iters%d_case_a",tol_pow,maxiter);
 
 ALL_RESULTS = reshape(readmatrix("RESULTS/" + str_exp + ".txt"), 5, size(matrix_dims,1), N, 6);
+norms_U = readmatrix("RESULTS/"+str_exp+ "_norms.txt");
 
 end
 

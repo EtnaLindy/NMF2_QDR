@@ -7,7 +7,7 @@ addpath 'NNSVD-LRC_v2'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rng(51193);                 % some birthday
-recompute_results = false;  % use precomputed values or compute from scratch
+recompute_results = true;  % use precomputed values or compute from scratch
 
 % square matrices
 matrix_dims = [10;20;30;40;50;60;70;80;90;100];
