@@ -4,6 +4,7 @@ addpath 'NNSVD-LRC_v2'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % testcase C: 4x4 integer matrices with known optima
+% Sorry: this is the test case D in the paper :)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rng(51193);                 % some birthday
@@ -185,8 +186,8 @@ savefig("RESULTS/" + str_exp + "_acc");
 
 
 titles = ["SPA","NNSVDLRC","NNDSVD","rand","QDR"];
-bound_str = ["> 0.1", "[0.1,1e-5[", "<= 1e-5"];
-bounds = [inf, 1e-1, 1e-5, -inf];
+bound_str = ["> 1e-2", "[1e-2,1e-5[", "<= 1e-5"];
+bounds = [inf, 1e-2, 1e-5, -inf];
 
 data = zeros(5,3);
 
@@ -199,6 +200,9 @@ fprintf("%s:\n",titles(j));
     fprintf("\n");
 end
 
+for i = 1:3
+    fprintf("%s \\\\\n",join(string(data(:,i))," & "));
+end
 
 
 
@@ -238,6 +242,32 @@ for i = 1:N
     
 end
 
-MMax = max(scaled_dist,[],2);
 
-fprintf("%s\n",join(string(MMax),", "));
+scaled_dist_init = zeros(5,N);
+
+
+for i = 1:N    
+    for k = 1:5
+        scaled_dist_init(k,i) = ALL_RESULTS(k,i,7)/dopt(i);
+    end
+    
+end
+
+
+fprintf("\nSUMMARY\n\n");
+
+
+fprintf("n = 4 & SPA & NNSVDLRC & NNDSVD & rand & QDR \\\\\n");
+fprintf("mean time & %s", join(string(round(mean(ALL_RESULTS(:,:,5)+ALL_RESULTS(:,:,6),2),5))," & "));
+fprintf("\\\\\n");
+fprintf("max time & %s", join(string(round(max(ALL_RESULTS(:,:,5)+ALL_RESULTS(:,:,6),[],2),3))," & "));
+fprintf("\\\\\n");
+fprintf("mean acc & %s", join(string(round(mean(scaled_dist(:,:),2),3))," & "));
+fprintf("\\\\\n");
+fprintf("max acc & %s", join(string(round(max(scaled_dist(:,:),[],2),3))," & "));
+fprintf("\\\\\n");
+fprintf("mean acc init & %s", join(string(round(mean(scaled_dist_init(:,:),2),3))," & "));
+fprintf("\\\\\n");
+fprintf("max acc init & %s", join(string(round(max(scaled_dist_init(:,:),[],2),3))," & "));
+fprintf("\\\\\n");
+fprintf("\n\n\n");

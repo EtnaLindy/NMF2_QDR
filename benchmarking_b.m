@@ -7,7 +7,7 @@ addpath 'NNSVD-LRC_v2'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rng(51193);                 % some birthday
-recompute_results = true;  % use precomputed values or compute from scratch
+recompute_results = false;  % use precomputed values or compute from scratch
 
 % square matrices
 matrix_dims = [ [10000;11000;12000;13000;14000;15000] 150*ones(6,1) ];
@@ -171,18 +171,19 @@ savefig("RESULTS/" + str_exp + "_time");
 
 
 
-% INITIALIZATION, TIME AND ACCURACY
+% INITIALIZATION, ACCURACY
+
+dists_scaled_init = ALL_RESULTS(:,:,:,1) ./ min(ALL_RESULTS(:,:,:,1),[],1);
+dists_scaled = ALL_RESULTS(:,:,:,2) ./ min(ALL_RESULTS(:,:,:,2),[],1);
+
+
 
 f = figure(2); clf;
 f.Position = [10 10 1000 600];
-mindist = zeros(size(matrix_dims,1),N);
-for i = 1:size(matrix_dims,1)
-    mindist(i,:) = reshape(min(ALL_RESULTS(:,i,:,1),[],1),1,N);
-end
 
 subplot(2,1,1); hold on;
 for i  = 1:5
-    plot(matrix_dims, max(reshape(ALL_RESULTS(i,:,:,1),size(mindist))./mindist,[],2), 'LineWidth',3);
+    plot(matrix_dims, max(dists_scaled_init(i,:,:),[],3), 'LineWidth',3);
 end
 linestyleorder(my_syms);
 colororder(my_colors);
@@ -195,7 +196,7 @@ title("Worst-case relative errors of initializations");
 
 subplot(2,1,2); hold on;
 for i  = 1:5
-    plot(matrix_dims, max(reshape(ALL_RESULTS(i,:,:,1),size(mindist))./mindist,[],2), 'LineWidth',3);
+    plot(matrix_dims, max(dists_scaled_init(i,:,:),[],3), 'LineWidth',3);
 end
 linestyleorder(my_syms);
 colororder(my_colors);
@@ -219,14 +220,10 @@ savefig("RESULTS/" + str_exp + "_acc_init");
 
 f = figure(3); clf;
 f.Position = [10 10 1000 600];
-mindist = zeros(size(matrix_dims,1),N);
-for i = 1:size(matrix_dims,1)
-    mindist(i,:) = reshape(min(ALL_RESULTS(:,i,:,2),[],1),1,N);
-end
 
 subplot(2,1,1); hold on;
 for i  = 1:5
-    plot(matrix_dims, max(reshape(ALL_RESULTS(i,:,:,2),size(mindist))./mindist,[],2), 'LineWidth',3);
+    plot(matrix_dims, max(dists_scaled(i,:,:),[],3), 'LineWidth',3);
 end
 linestyleorder(my_syms);
 colororder(my_colors);
@@ -238,7 +235,7 @@ title("Worst-case relative errors");
 
 subplot(2,1,2); hold on;
 for i  = 1:5
-    plot(matrix_dims, max(reshape(ALL_RESULTS(i,:,:,2),size(mindist))./mindist,[],2), 'LineWidth',3);
+    plot(matrix_dims, max(dists_scaled(i,:,:),[],3), 'LineWidth',3);
 end
 linestyleorder(my_syms);
 colororder(my_colors);
@@ -319,3 +316,24 @@ legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','eastoutside');
 fontsize(20,"points");
 exportgraphics(f,"RESULTS/" + str_exp + "_iters.png");
 savefig("RESULTS/" + str_exp + "_iters");
+
+
+fprintf("\n\nSummary of the results\n\n");
+
+
+for i = 1:size(matrix_dims,1)
+    fprintf("n = %d & SPA & NNSVDLRC & NNDSVD & rand & QDR \\\\\n", matrix_dims(i));
+    fprintf("mean time & %s", join(string(round(mean(ALL_RESULTS(:,i,:,5)+ALL_RESULTS(:,i,:,6),3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("max time & %s", join(string(round(max(ALL_RESULTS(:,i,:,5)+ALL_RESULTS(:,i,:,6),[],3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("mean acc & %s", join(string(round(mean(dists_scaled(:,i,:),3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("max acc & %s", join(string(round(max(dists_scaled(:,i,:),[],3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("mean acc init & %s", join(string(round(mean(dists_scaled_init(:,i,:),3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("max acc init & %s", join(string(round(max(dists_scaled_init(:,i,:),[],3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("\n\n\n");
+end

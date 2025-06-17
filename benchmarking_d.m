@@ -4,10 +4,11 @@ addpath 'NNSVD-LRC_v2'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % testcase D: square lowrank matrices with noise
+% Sorry: this is the test case C in the paper :)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rng(51193);                 % some birthday
-recompute_results = true;  % use precomputed values or compute from scratch
+recompute_results = false;  % use precomputed values or compute from scratch
 
 % square matrices
 matrix_dims = [10;20;30;40;50;60;70;80;90;100];
@@ -118,6 +119,10 @@ end
 my_syms = ["--";":";"-.";"-*";"-"];
 my_colors = ["#CC0000";"#FFCC00";"#663399";"#009900";"#1656DD"];
 
+dists_scaled_init = ALL_RESULTS(:,:,:,1) ./ min(ALL_RESULTS(:,:,:,1),[],1);
+dists_scaled = ALL_RESULTS(:,:,:,2) ./ min(ALL_RESULTS(:,:,:,2),[],1);
+
+
 
 
 % plotting....
@@ -139,23 +144,14 @@ fontsize(18,"points");
 title("Median time performance");
 
 
-
-mindist = zeros(size(matrix_dims,1),N);
-for i = 1:size(matrix_dims,1)
-    mindist(i,:) = reshape(min(ALL_RESULTS(:,i,:,2),[],1),1,N);
-end
-
-
 subplot(1,2,2); hold on;
-for k = 1:5
-    plot(matrix_dims, max(reshape(ALL_RESULTS(k,:,:,2),size(mindist))./mindist,[],2), 'LineWidth',3);
+for k = [1,2,3,5]
+    plot(matrix_dims, max(dists_scaled(k,:,:),[],3), 'LineStyle', my_syms(k), 'color', my_colors(k), 'LineWidth',3);
 end
-linestyleorder(my_syms);
-colororder(my_colors);
 
-legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','northeast');
+legend('SPA','NNSVDLRC','NNDSVD','QDR','Location','northeast');
 xlabel("n");
-xlim([min(matrix_dims) max(matrix_dims)]); ylim([0.9999,1.01]);
+xlim([min(matrix_dims) max(matrix_dims)]);
 fontsize(18,"points");
 title("Worst ratio between distances");
 
@@ -163,3 +159,22 @@ exportgraphics(f,"RESULTS/" + str_exp + ".png");
 savefig("RESULTS/" + str_exp);
 
 
+fprintf("\n\nSummary of the results\n\n");
+
+
+for i = 1:size(matrix_dims,1)
+    fprintf("n = %d & SPA & NNSVDLRC & NNDSVD & rand & QDR \\\\\n", matrix_dims(i));
+    fprintf("mean time & %s", join(string(round(mean(ALL_RESULTS(:,i,:,5)+ALL_RESULTS(:,i,:,6),3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("max time & %s", join(string(round(max(ALL_RESULTS(:,i,:,5)+ALL_RESULTS(:,i,:,6),[],3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("mean acc & %s", join(string(round(mean(dists_scaled(:,i,:),3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("max acc & %s", join(string(round(max(dists_scaled(:,i,:),[],3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("mean acc init & %s", join(string(round(mean(dists_scaled_init(:,i,:),3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("max acc init & %s", join(string(round(max(dists_scaled_init(:,i,:),[],3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("\n\n\n");
+end

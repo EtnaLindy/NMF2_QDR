@@ -27,7 +27,7 @@ if recompute_results
 
 
 ALL_RESULTS = zeros(5,size(matrix_dims,1),N,6);
-norms_U = zeros(N,1);
+norms_U = zeros(N,k);
 
 for k = 1:size(matrix_dims,1)
     
@@ -42,7 +42,7 @@ for k = 1:size(matrix_dims,1)
         if mod(i,N/4) == 0, fprintf("%d %%... ", compl); compl =  compl + 25; end
 
         U = generate_data(n,n,true);
-        norms_U(i) = norm(U,'fro');
+        norms_U(i,k) = norm(U,'fro');
  
         
         tic; % QDR
@@ -174,41 +174,58 @@ savefig("RESULTS/" + str_exp + "_time");
 
 
 
-% INITIALIZATION, TIME AND ACCURACY
+% INITIALIZATION ACCURACY
+
+% scale distances
+
+dists_scaled_init = ALL_RESULTS(:,:,:,1) ./ min(ALL_RESULTS(:,:,:,1),[],1);
+dists_scaled = ALL_RESULTS(:,:,:,2) ./ min(ALL_RESULTS(:,:,:,2),[],1);
+
+
+
 
 f = figure(2); clf;
-f.Position = [10 10 1000 600];
-mindist = zeros(size(matrix_dims,1),N);
-for i = 1:size(matrix_dims,1)
-    mindist(i,:) = reshape(min(ALL_RESULTS(:,i,:,1),[],1),1,N);
+f.Position = [10 10 1200 600];
+
+
+subplot(2,2,1); hold on;
+for i = [1,3,5]
+    plot(matrix_dims, mean(dists_scaled_init(i,:,:),3), 'LineStyle', my_syms(i), 'color', my_colors(i), 'LineWidth',3);
 end
 
-subplot(2,1,1); hold on;
-for i  = 1:5
-    plot(matrix_dims, max(reshape(ALL_RESULTS(i,:,:,1),size(mindist))./mindist,[],2), 'LineWidth',3);
-end
-linestyleorder(my_syms);
-colororder(my_colors);
-
-
-xlabel("n");
-xlim([min(matrix_dims) max(matrix_dims)]); ylim([0 3])
+xlim([min(matrix_dims) max(matrix_dims)]);
 fontsize(20,"points");
-title("Worst-case relative errors of initializations");
+title("Mean relative errors of initializations");
 
-subplot(2,1,2); hold on;
-for i  = 1:5
-    plot(matrix_dims, max(reshape(ALL_RESULTS(i,:,:,1),size(mindist))./mindist,[],2), 'LineWidth',3);
+subplot(2,2,2); hold on;
+for i  = [1,5]
+    plot(matrix_dims, mean(dists_scaled_init(i,:,:),3), 'LineStyle', my_syms(i), 'color', my_colors(i), 'LineWidth',3);
 end
-linestyleorder(my_syms);
-colororder(my_colors);
 
-legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','eastoutside');
+
+xlim([min(matrix_dims) max(matrix_dims)]);
+fontsize(20,"points");
+title("Zoom in");
+
+subplot(2,2,3); hold on;
+for i = [1,3,5]
+    plot(matrix_dims, max(dists_scaled_init(i,:,:),[],3), 'LineStyle', my_syms(i), 'color', my_colors(i), 'LineWidth',3);
+end
 
 
 xlabel("n");
 xlim([min(matrix_dims) max(matrix_dims)]);
-ylim([1,1.005]);
+fontsize(20,"points");
+title("Max relative errors of initializations");
+
+subplot(2,2,4); hold on;
+for i  = [1,5]
+    plot(matrix_dims, max(dists_scaled_init(i,:,:),[],3), 'LineStyle', my_syms(i), 'color', my_colors(i), 'LineWidth',3);
+end
+
+xlabel("n");
+xlim([min(matrix_dims) max(matrix_dims)]);
+ylim([0.999,1.005]);
 fontsize(20,"points");
 title("Zoom in");
 
@@ -222,36 +239,43 @@ savefig("RESULTS/" + str_exp + "_acc_init");
 
 f = figure(3); clf;
 f.Position = [1000 10 1000 600];
-mindist = zeros(size(matrix_dims,1),N);
-for i = 1:size(matrix_dims,1)
-    mindist(i,:) = reshape(min(ALL_RESULTS(:,i,:,2),[],1),1,N);
-end
 
-subplot(2,1,1); hold on;
-for i  = 1:5
-    plot(matrix_dims, mean(reshape(ALL_RESULTS(i,:,:,2),size(mindist))./mindist,2), 'LineWidth',3);
+subplot(2,2,1); hold on;
+for i  = [1,3,5]
+    scatter(matrix_dims, mean(dists_scaled(i,:,:),3), 'filled', 'MarkerFaceColor', my_colors(i));
 end
-linestyleorder(my_syms);
-colororder(my_colors);
-xlabel("n");
 xlim([min(matrix_dims) max(matrix_dims)]); 
 fontsize(20,"points");
 title("Median relative errors");
 
 
-subplot(2,1,2); hold on;
-for i  = 1:5
-    plot(matrix_dims, mean(reshape(ALL_RESULTS(i,:,:,2),size(mindist))./mindist,2), 'LineWidth',3);
+subplot(2,2,2);  hold on;
+for i  = [1,5]
+    scatter(matrix_dims, mean(dists_scaled(i,:,:),3), 'filled','MarkerFaceColor',  my_colors(i));
 end
-linestyleorder(my_syms);
-colororder(my_colors);
+xlim([min(matrix_dims) max(matrix_dims)]); 
+fontsize(20,"points");
+title("Zoom in");
 
-legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','eastoutside');
+subplot(2,2,3); hold on;
+for i  = [1,3,5]
+    scatter(matrix_dims, max(dists_scaled(i,:,:),[],3), 'filled', 'MarkerFaceColor', my_colors(i));
+end
+xlabel("n");
+xlim([min(matrix_dims) max(matrix_dims)]); 
+fontsize(20,"points");
+title("Maximum relative errors");
+
+
+subplot(2,2,4);  hold on;
+for i  = [1,5]
+    scatter(matrix_dims, max(dists_scaled(i,:,:),[],3), 'filled','MarkerFaceColor', my_colors(i));
+end
 
 xlabel("n");
 xlim([min(matrix_dims) max(matrix_dims)]); 
 fontsize(20,"points");
-title("Median relative errors");
+title("Zoom in");
 
 
 exportgraphics(f,"RESULTS/" + str_exp + "_acc.png");
@@ -322,3 +346,25 @@ legend('SPA','NNSVDLRC','NNDSVD','rand','QDR','Location','eastoutside');
 fontsize(20,"points");
 exportgraphics(f,"RESULTS/" + str_exp + "_iters.png");
 savefig("RESULTS/" + str_exp + "_iters");
+
+
+
+fprintf("\n\nSummary of the results\n\n");
+
+
+for i = 1:size(matrix_dims,1)
+    fprintf("n = %d & SPA & NNSVDLRC & NNDSVD & rand & QDR \\\\\n", matrix_dims(i));
+    fprintf("mean time & %s", join(string(round(mean(ALL_RESULTS(:,i,:,5)+ALL_RESULTS(:,i,:,6),3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("max time & %s", join(string(round(max(ALL_RESULTS(:,i,:,5)+ALL_RESULTS(:,i,:,6),[],3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("mean acc & %s", join(string(round(mean(dists_scaled(:,i,:),3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("max acc & %s", join(string(round(max(dists_scaled(:,i,:),[],3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("mean acc init & %s", join(string(round(mean(dists_scaled_init(:,i,:),3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("max acc init & %s", join(string(round(max(dists_scaled_init(:,i,:),[],3),3))," & "));
+    fprintf("\\\\\n");
+    fprintf("\n\n\n");
+end
