@@ -3,7 +3,7 @@ addpath 'NNSVD-LRC_v2'
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% testcase A: square log normal iid matrices
+% testcase A1: square log normal iid matrices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rng(51193);                 % some birthday
@@ -27,7 +27,6 @@ if recompute_results
 
 
 ALL_RESULTS = zeros(5,size(matrix_dims,1),N,6);
-norms_U = zeros(N,k);
 
 for k = 1:size(matrix_dims,1)
     

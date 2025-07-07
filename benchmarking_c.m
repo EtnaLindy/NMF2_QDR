@@ -4,7 +4,6 @@ addpath 'NNSVD-LRC_v2'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % testcase C: 4x4 integer matrices with known optima
-% Sorry: this is the test case D in the paper :)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rng(51193);                 % some birthday
@@ -24,7 +23,7 @@ if recompute_results
 
 % first dim : SPA, NNSVDLRC, NNDSVD, rand, QDR
 % second dim : sampled data points
-% fourth dim: init relative error to optimum, relative error to optimum, 
+% third dim: init relative error to optimum, relative error to optimum, 
 %               ANLS iters, ANLS convergence, 
 %               init time, ANLS time,
 %               init relative error to U, relative error to U
@@ -143,7 +142,7 @@ for j = inds_exclude_rand
     colororder(my_colors);
 end
 
-legend('SPA','NNSVDLRC','NNDSVD','QDR','Location','eastoutside');
+%legend('SPA','NNSVDLRC','NNDSVD','QDR','Location','eastoutside');
 xlabel("index");
 
 

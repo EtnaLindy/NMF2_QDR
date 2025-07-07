@@ -25,7 +25,7 @@ phi=atan2(V(:,2),V(:,1)); dv = sqrt(sum(V.^2,2));
 [alpha2,~] = mintheta(phi,psi,dv,du);
 
 % find nonnegative L and R
-s=cos(alpha2-alpha1); 
+s=sqrt(cos(alpha2-alpha1)); 
 psi_new = min(max(psi,alpha1-pi/2),alpha2);
 phi_new = min(max(phi,alpha2-pi/2),alpha1);
 du = du.*cos(psi-psi_new);

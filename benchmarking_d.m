@@ -3,8 +3,8 @@ addpath 'NNSVD-LRC_v2'
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% testcase D: square lowrank matrices with noise
-% Sorry: this is the test case C in the paper :)
+% testcase "D": square lowrank matrices with noise
+% Sorry: this is the test case B in the paper :)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rng(51193);                 % some birthday

@@ -3,7 +3,8 @@ addpath 'NNSVD-LRC_v2'
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% testcase B: tall log normal iid matrices
+% testcase "B": tall log normal iid matrices
+% this is A2 in the paper
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rng(51193);                 % some birthday
